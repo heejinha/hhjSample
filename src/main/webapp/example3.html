@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vue Example Page</title>
+    <link href="./js/jqueryui/jquery-ui.css" rel="stylesheet">
+    <script src="./js/veu/vue.js"></script>
+    <script src="./js/jquery/jquery-3.3.1.js"></script>
+    <script src="./js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript">
+        var gaia3d = {};
+        gaia3d.guestBook = {};
+    </script>
+    <style type="text/css">
+    	#insertView tr{width:100%; }
+    	#insertView tr td{width:30%;}
+    </style>
+</head>
+<body>
+
+	<!-- 상세조회 -->
+	<table id="detailView" border="1" style="width: 500px" title="상세조회">
+         <tr>
+             <td>이름</td>
+             <td>{{dtlName}}</td>
+         </tr>
+         <tr>
+             <td>연락처</td>
+             <td>{{dtlTell}}</td>
+         </tr>
+         <tr>
+             <td>메시지 내용</td>
+<!--              <td colspan=2 style="white-space: pre"> -->
+             <td colspan=2>
+             	{{dtlMessage}}
+             </td>
+         </tr>
+         <tr>
+             <td>등록일자</td>
+             <td>{{dtlRegDate}}</td>
+         </tr>
+    </table>
+    <script type="text/javascript">
+    	gaia3d.guestBook.detailDialog = $("#detailView").dialog({
+    		autoOpen : false,
+    		modal : true,
+    		width : 500
+    	});
+    	gaia3d.guestBook.detail = new Vue({
+    		el : "#detailView",
+    		data : {
+    			dtlName : '',
+    			dtlTell : '',
+    			dtlMessage : '',
+    			dtlRegDate : ''
+    		}
+    	});
+    </script>
+    
+    <!-- 등록 -->
+    <table id="insertView" border="1" title="등록">
+         <tr>
+             <td>이름</td>
+             <td>
+             	<input type="text" name="name" v-model="insName">
+             </td>
+         </tr>
+         <tr>
+             <td>비밀번호</td>
+             <td>
+             	<input type="password" name="pwd" v-model="insPwd">
+             </td>
+         </tr>
+         <tr>
+             <td>연락처</td>
+             <td>
+             	<input type="text" name="tell" v-model="insTell">
+             </td>
+         </tr>
+         <tr>
+             <td colspan=4 rowspan="span">
+             	<textarea name="message" cols=60 rows=5 v-model="insMessage"></textarea>
+             </td>
+         </tr>
+         <tr>
+             <td colspan=4 align=right>
+             	<button v-on:click="insertConfirm()">등록</button>
+             </td>
+         </tr>
+    </table>
+    <script type="text/javascript">
+    	gaia3d.guestBook.insertViewDialog = $("#insertView").dialog({
+    		autoOpen : false,
+    		modal : true,
+    		width : 700
+    	});
+    	
+    	gaia3d.guestBook.insert = new Vue({
+    		el : "#insertView",
+    		data : {
+    			insName : '',
+    			insPwd : '',
+    			insTell : '',
+    			insMessage : ''
+    		},
+    		methods : {
+				insertConfirm : function () {
+					var guestbooks = gaia3d.guestBook.list.guestbooks;
+					var insData = {
+						no : guestbooks[guestbooks.length - 1].no + 1,
+						name : this.insName,
+						pwd : this.insPwd,
+						tell : this.insTell,
+						message : this.insMessage,
+						regDate : '2019-01-01'
+					}
+					
+					//데이터 push
+					gaia3d.guestBook.list.guestbooks.push(insData);
+					//등록 화면 닫기
+					gaia3d.guestBook.insertViewDialog.dialog('close');
+				}
+    		}
+    	});
+    </script>
+    
+    <!-- 삭제 -->
+    <table id="deleteView" title="삭제">
+        <tr>
+            <td>비밀번호</td>
+            <td>
+            	<input type="password" name="pwd" v-model="insPwd">
+            </td>
+            <td>
+            	<button v-on:click="deleteConfirm(delNo, delPwd)">삭제</button>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+    	gaia3d.guestBook.deleteViewDialog = $("#deleteView").dialog({
+    		autoOpen : false,
+    		modal : true,
+    		width : 500
+    	}); 
+    
+    	gaia3d.guestBook.delete = new Vue({
+    		el : "#deleteView",
+    		data : {
+    			delNo : '',
+    			delPwd : '',
+    			insPwd : ''
+    		},
+    		methods : {
+    			deleteConfirm : function (no, pwd) {
+    				
+    				//비밀번호 체크
+    				if(pwd !== this.insPwd) {
+    					alert("비밀번호 확인 필요");
+    					return;
+    				}
+    				
+    				var guestbookArry = gaia3d.guestBook.list.guestbooks;
+    				var guestbookArryLength = gaia3d.guestBook.list.guestbooks.length;
+    				
+    				//해당 순번 데이터 확인
+    				for(var i = 0; i < guestbookArryLength; i++){
+    					if(no === guestbookArry[i].no){
+		    				//해당 데이터 삭제
+    						guestbookArry.splice(i, 1);
+		    				break;
+    					}
+    				}
+    				
+    				//삭제화면창 닫기
+    				gaia3d.guestBook.deleteViewDialog.dialog('close');
+    			}
+    		}
+    	});
+    </script>
+
+	<!-- 목록조회 -->
+	<div id="list">
+        <table style="width: 500" border="1px">
+            <tr>
+                <td>순번</td>
+                <td>작성자</td>
+                <td>등록일자</td>
+                <td>연락처</td>
+                <td>메시지</td>
+                <td>비고</td>
+            </tr>
+            <tbody>
+                <tr v-for="guestbook in guestbooks" :key="guestbook.no" v-on:click="detail(guestbook.no);" style="cursor:pointer;">
+                    <td>{{guestbook.no}}</td>
+                    <td>{{guestbook.name}}</td>
+                    <td>{{guestbook.regDate}}</td>
+                    <td>{{guestbook.tell}}</td>
+                    <td>{{guestbook.message}}</td>
+                    <td><button v-on:click.stop="deleteView(guestbook.no)">삭제</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button v-on:click="insertView()">등록</button>
+    </div>
+    <script type="text/javascript">
+    	var data = [
+    		{no : 1, name : 'test1', pwd : 'pwd1', tell : '010-1234-5671', message : 'message1', regDate : '2019-04-05'},
+    		{no : 2, name : 'test2', pwd : 'pwd2', tell : '010-1234-5672', message : 'message2', regDate : '2019-05-16'},
+    		{no : 3, name : 'test3', pwd : 'pwd3', tell : '010-1234-5673', message : 'message3', regDate : '2019-06-05'},
+    		{no : 4, name : 'test4', pwd : 'pwd4', tell : '010-1234-5674', message : 'message4', regDate : '2019-07-01'},
+    		{no : 5, name : 'test5', pwd : 'pwd5', tell : '010-1234-5675', message : 'message5', regDate : '2019-07-05'},
+    	];
+    	
+    	gaia3d.guestBook.list = new Vue({
+    		el : "#list",
+    		data : {
+    			guestbooks : []
+    		},
+    		methods : {
+    			search : function () {
+    				//배열 초기화
+    				this.guestbooks.splice(0, this.guestbooks.length);
+    				console.log(this.guestbooks.length);
+    				
+    				for(var key in data){
+    					this.guestbooks.push(data[key]);
+    				}
+    			},
+    			detail : function (no) {
+    				var guestbookArry = this.guestbooks;
+    				var guestbookArryLength = guestbookArry.length;
+    				
+    				for(var i = 0; i < guestbookArryLength; i ++){
+    					if(guestbookArry[i].no === no){
+    						//상세보기 화면 표츌 값 셋팅
+    						gaia3d.guestBook.detail.dtlName = guestbookArry[i].name;
+    						gaia3d.guestBook.detail.dtlTell = guestbookArry[i].tell;
+    						gaia3d.guestBook.detail.dtlMessage = guestbookArry[i].message;
+    						gaia3d.guestBook.detail.dtlRegDate = guestbookArry[i].regDate;
+    						//상세보기 다이얼로그 창 열기
+    						gaia3d.guestBook.detailDialog.dialog('open');
+    					}	
+    				}
+    				
+    			},
+    			deleteView : function (no) {
+    				var guestbookArry = this.guestbooks;
+    				var guestbookArryLength = guestbookArry.length;
+    				
+    				for(var i = 0; i < guestbookArryLength; i ++){
+    					if(guestbookArry[i].no === no){
+    						//삭제하려는 값 셋팅
+    						gaia3d.guestBook.delete.delNo = guestbookArry[i].no;
+    						gaia3d.guestBook.delete.delPwd = guestbookArry[i].pwd;
+    						//삭제화면 다이얼로그 창 열기
+    						gaia3d.guestBook.deleteViewDialog.dialog('open');
+    					}	
+    				}
+    				
+    			},
+    			insertView : function () {
+    				//등록화면 다이얼로그 창 열기
+    				gaia3d.guestBook.insertViewDialog.dialog('open');
+    			}
+    		}
+    	});
+    	
+    	//초기 리스트 조회
+    	gaia3d.guestBook.list.search();
+    </script>
+</body>
+</html>

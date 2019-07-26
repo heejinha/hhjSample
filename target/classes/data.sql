@@ -1,0 +1,1 @@
+CALL FILE_TABLE('src/main/resources/data/City.shp', 'city');

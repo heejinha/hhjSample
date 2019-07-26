@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Insert title here</title>
+    <link href="./js/jqueryui/jquery-ui.css" rel="stylesheet">
+    <script src="./js/veu/vue.js"></script>
+    <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+    <script src="./js/jquery/jquery-3.3.1.js"></script>
+    <script src="./js/jqueryui/jquery-ui.js"></script>
+    <script type="text/javascript">
+        var gaia3d = {};
+        gaia3d.guestBook = {};
+        gaia3d.guestBook.seq = 0;
+    </script>
+</head>
+<body>
+    <table id="detailForm" border="1" style="width: 500px" title="Detail">
+         <tr>
+             <td>이름</td>
+             <td>{{name}}</td>
+             <td>등록일자</td>
+             <td>{{regDate}}</td>
+         </tr>
+         <tr>
+             <td colspan=4 style="white-space: pre">{{message}}</td>
+         </tr>
+    </table>
+    <script type="text/javascript">
+        gaia3d.guestBook.detailFormDialog = $("#detailForm").dialog({
+            autoOpen: false,
+            modal: true,
+            width: 550
+        });
+        gaia3d.guestBook.detailForm = new Vue({
+            el: '#detailForm',
+            data: {
+                name: '',
+                message: '',
+                regDate: ''
+            }
+        });
+    </script>
+    <table id="inputForm" border="1" style="width: 500px" title="Insert">
+         <tr>
+             <td>이름</td>
+             <td><input type="text" v-model="name" name="name"></td>
+             <td>비밀번호</td>
+             <td><input type="password" v-model="pwd" name="pwd"></td>
+         </tr>
+         <tr>
+             <td colspan=4><textarea name="message" v-model="message" cols=60 rows=5></textarea></td>
+         </tr>
+         <tr>
+             <td colspan=4 align=right><button v-on:click="insert">저장</button></td>
+         </tr>
+<!-- <tr><td colspan=4  style="white-space: pre-line">{{name}} - {{pwd}} - {{message}}</td></tr> -->
+    </table>
+    <script type="text/javascript">
+        gaia3d.guestBook.inputFormDialog = $("#inputForm").dialog({
+            autoOpen: false,
+            modal: true,
+            width: 550
+        });
+        gaia3d.guestBook.inputForm = new Vue({
+            el: '#inputForm',
+            data: {
+                name: '',
+                pwd: '',
+                message: ''
+            },
+            methods: {
+                insert: function (event) {
+                    gaia3d.guestBook.seq++;
+                    gaia3d.guestBook.list.guestbooks.push({no: gaia3d.guestBook.seq,
+                                                           name: this.name,
+                                                           pwd: this.pwd,
+                                                           message: this.message,
+                                                           regDate: new Date()})
+                    gaia3d.guestBook.inputFormDialog.dialog( "close" );
+                }
+            }
+        });
+    </script>
+
+    <table id="deleteForm" title="Delete">
+        <tr>
+            <td>비밀번호</td>
+            <td><input type="hidden" name="no" v-model="no"><input type="password" v-model="newPwd" name="pwd"></td>
+            <td><button v-on:click="remove">삭제</button></td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        gaia3d.guestBook.deleteFormDialog = $("#deleteForm").dialog({
+            autoOpen: false,
+            modal: true,
+            width: 550
+        });
+
+        gaia3d.guestBook.deleteForm = new Vue({
+            el: '#deleteForm',
+            data: {
+                no: "",
+                pwd: "",
+                newPwd: ""
+            },
+            methods: {
+                remove: function (event) {
+                    var ar = gaia3d.guestBook.list.guestbooks;
+                    var index = -1;
+                    for (var i = 0; i < ar.length; i ++) {
+                        if (ar[i].no == this.no && ar[i].pwd === this.newPwd) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index != -1) {
+                        ar.splice(index, 1);
+                    }
+                    gaia3d.guestBook.deleteFormDialog.dialog("close");
+                }
+            }
+        });
+    </script>
+
+    <div id="list">
+        <table style="width: 500" border="1"  >
+            <tr>
+                <td>순번</td>
+                <td>작성자</td>
+                <td>등록일자</td>
+                <td></td>
+            </tr>
+            <tbody >
+                <tr v-for="guestbook in guestbooks" :key="guestbook.no" v-on:click="detail(guestbook.no)">
+                    <td>{{guestbook.no}}</td>
+                    <td>{{guestbook.name}}</td>
+                    <td>{{guestbook.regDate}}</td>
+                    <td><button v-on:click.stop="remove(guestbook.no)">삭제</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button v-on:click="search">조회</button>
+        <button v-on:click="creat">등록</button>
+    </div>
+    <script type="text/javascript">
+        var data = [{no: 1, name: "test1", pwd: "1234", message: "<test1>message01\nmessage11", regDate: new Date()},
+            {no: 2, name: "test2", pwd: "1234", message: "<test2>message02\nmessage12", regDate: new Date()},
+            {no: 3, name: "test3", pwd: "1234", message: "message03\nmessage13", regDate: new Date()},
+            {no: 4, name: "test4", pwd: "1234", message: "message04\nmessage14", regDate: new Date()},
+            {no: 5, name: "test5", pwd: "1234", message: "message05\nmessage15", regDate: new Date()}];
+
+        gaia3d.guestBook.list = new Vue({
+            el: '#list',
+            data: {
+                guestbooks: []
+            },
+            methods: {
+                remove: function (no, event) {
+                    var ar = this.guestbooks;
+                    var index = -1;
+                    for (var i = 0; i < ar.length; i ++) {
+                        if (ar[i].no == no) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index !== -1) {
+                        gaia3d.guestBook.deleteForm.no = ar[index].no;
+                        gaia3d.guestBook.deleteForm.pwd = ar[index].pwd;
+                        gaia3d.guestBook.deleteFormDialog.dialog("open");
+                    }
+                },
+                search: function () {
+                    this.guestbooks.splice(0, this.guestbooks.length);
+                    // this.guestbooks = [];
+                    console.log(this.guestbooks.length);
+                    gaia3d.guestBook.seq = 0;
+                    for (var key in data) {
+                        this.guestbooks.push(data[key]);
+                        gaia3d.guestBook.seq++;
+                    }
+                },
+                creat: function () {
+                    gaia3d.guestBook.inputForm.name = "";
+                    gaia3d.guestBook.inputForm.pwd = "";
+                    gaia3d.guestBook.inputForm.message = "";
+                    gaia3d.guestBook.inputFormDialog.dialog( "open" );
+                },
+                detail: function (no, event) {
+
+                    var ar = this.guestbooks;
+                    var index = -1;
+                    for (var i = 0; i < ar.length; i ++) {
+                        if (ar[i].no == no) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index !== -1) {
+                        gaia3d.guestBook.detailForm.name = ar[index].name;
+                        gaia3d.guestBook.detailForm.regDate = ar[index].regDate;
+                        gaia3d.guestBook.detailForm.message = ar[index].message;
+                        gaia3d.guestBook.detailFormDialog.dialog( "open" );
+                    }
+                }
+            }
+        });
+        gaia3d.guestBook.list.search();
+    </script>
+
+</body>
+</html>
