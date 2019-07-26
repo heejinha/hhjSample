@@ -75,30 +75,48 @@ public class GuestbookController {
         return "timeout";
     }
     
-    @RequestMapping(value = "/exapmleIndex", method = RequestMethod.GET)
-    public String exapmleIndex(Model model) {
+    @RequestMapping(value = "/exampleIndex", method = RequestMethod.GET)
+    public String exampleIndex(Model model) {
         List<Guestbook> guestbookList = guestbookService.getMessageList();
         model.addAttribute("guestbookList", guestbookList);
-        return "exapmle/index";
+        return "example/index";
     }
     
-    @RequestMapping(value = "/exapmleSearch", method = RequestMethod.POST)
+    @RequestMapping(value = "/exampleSearch", method = RequestMethod.POST)
     @ResponseBody
-    public List<Guestbook> exapmleSearch(Model model) {
+    public List<Guestbook> exampleSearch(Model model) {
         List<Guestbook> guestbookList = guestbookService.getMessageList();
         return guestbookList;
     }
     
-    @RequestMapping(value = "/exapmleDetail", method = RequestMethod.POST)
+    @RequestMapping(value = "/exampleDetail", method = RequestMethod.POST)
     @ResponseBody
-    public Guestbook exapmleDetail(@RequestParam(value="no") Integer no,  Model model) {
-    	Guestbook guestbookData = guestbookService.getMessage(no);
+    public Guestbook exampleDetail(Guestbook guestbook,  Model model) {
+    	Guestbook guestbookData = guestbookService.getMessage(guestbook.getNo());
     	return guestbookData;
     }
     
-    @RequestMapping(value = "/exapmleDelete", method = RequestMethod.POST)
+    @RequestMapping(value = "/exampleDelete", method = RequestMethod.POST)
     @ResponseBody
-    public void exapmleDelete(@RequestParam(value="no") Integer no,  Model model) {
-    	guestbookService.deleteMessage(no);
+//    public void exampleDelete(@RequestParam(value="no") Integer no,  Model model) {
+    public void exampleDelete(Guestbook guestbook,  Model model) {
+    	guestbookService.deleteMessage(guestbook.getNo());
+    }
+    
+    @RequestMapping(value = "/exampleInsert", method = RequestMethod.POST)
+    @ResponseBody
+    public void exampleInsert(Guestbook guestbook) {
+    	
+    	System.out.println("======guestbook nbgvcvuio;m',.3 name : " + guestbook.getName());
+    	System.out.println("======guestbook pwd : " + guestbook.getPwd());
+    	System.out.println("======guestbook tell : " + guestbook.getTell());
+    	System.out.println("======guestbook message : " + guestbook.getMessage());
+    	guestbookService.insertMessage(guestbook);
+    }
+    
+    @RequestMapping(value = "exampleUpdate", method = RequestMethod.POST)
+    @ResponseBody
+    public void exampleUpdate(Guestbook guestbook) {
+    	//수정쿼리 jpa에서 merge 사용해야 할듯
     }
 }
