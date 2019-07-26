@@ -98,7 +98,6 @@ public class GuestbookController {
     
     @RequestMapping(value = "/exampleDelete", method = RequestMethod.POST)
     @ResponseBody
-//    public void exampleDelete(@RequestParam(value="no") Integer no,  Model model) {
     public void exampleDelete(Guestbook guestbook,  Model model) {
     	guestbookService.deleteMessage(guestbook.getNo());
     }
