@@ -43,6 +43,10 @@
              <td>등록일자</td>
              <td>{{dtlRegDate}}</td>
          </tr>
+         <tr>
+             <td>test</td>
+             <td>test</td>
+         </tr>
     </table>
     <script type="text/javascript">
     	gaia3d.guestBook.detailDialog = $("#detailView").dialog({
