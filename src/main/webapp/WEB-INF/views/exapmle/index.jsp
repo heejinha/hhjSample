@@ -343,9 +343,9 @@
 	    		search : function () {
 	    			var _this = this;
 	    			$.post("exampleSearch", null, function(data) {
-	    				if(data.length > 0){
+// 	    				if(data.length > 0){
 	    					_this.guestbooks = data;
-	    				}
+// 	    				}
 	    			}, "json");
 	    		},
 	    		detail : function (no) {
