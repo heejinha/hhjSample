@@ -1,5 +1,6 @@
 package com.example.demo.guestbook.control;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -105,17 +106,6 @@ public class GuestbookController {
     @RequestMapping(value = "/exampleInsert", method = RequestMethod.POST)
     @ResponseBody
     public void exampleInsert(Guestbook guestbook) {
-    	
-    	System.out.println("======guestbook nbgvcvuio;m',.3 name : " + guestbook.getName());
-    	System.out.println("======guestbook pwd : " + guestbook.getPwd());
-    	System.out.println("======guestbook tell : " + guestbook.getTell());
-    	System.out.println("======guestbook message : " + guestbook.getMessage());
     	guestbookService.insertMessage(guestbook);
-    }
-    
-    @RequestMapping(value = "exampleUpdate", method = RequestMethod.POST)
-    @ResponseBody
-    public void exampleUpdate(Guestbook guestbook) {
-    	//수정쿼리 jpa에서 merge 사용해야 할듯
     }
 }

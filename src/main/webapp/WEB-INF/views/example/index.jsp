@@ -193,6 +193,7 @@
 	    	},
 	    	methods : {
 	    		updateInfo : function (data) {
+
 	    			gaia3d.guestBook.pwdChkViewDialog.dialog("close");
 	
 	    			//조회하려는 데이터 셋팅
@@ -200,16 +201,22 @@
 	    		},
 	    		updateConfirm : function (no) {
 	    			var params = this.updGuestBooks
-	    			
 	    			params.no = no;
+	    			params.regDate = new Date();
 	    			
 	    			$.ajax({
 	    				type : "POST",
-	    				url : "exampleUpdate",
-	    				data : params	    				
+	    				url : "exampleInsert",
+	    				data : params
 	    			}).done(function () {
-	    				//수정된 데이터 상세조회
+	    				//수정화면 닫기
+	    				gaia3d.guestBook.updateViewDialog.dialog("close");
+	    				
+	    				//상세조회
 	    				gaia3d.guestBook.list.detail(params.no);
+	    				
+	    				//초기 리스트 조회
+	    		    	gaia3d.guestBook.list.search();
 	    			});
 	    		}
 	    	}
@@ -326,8 +333,8 @@
                     <td>{{guestbook.tell}}</td>
                     <td>{{guestbook.message}}</td>
                     <td>
-                    	<button v-on:click.stop="updateView(guestbook.no, guestbook.pwd)">수정</button>
-                    	<button v-on:click.stop="deleteView(guestbook.no, guestbook.pwd)">삭제</button>
+                    	<button v-on:click.stop="changeView(guestbook.no, 'update')">수정</button>
+                    	<button v-on:click.stop="changeView(guestbook.no, 'delete')">삭제</button>
                     </td>
                 </tr>
             </tbody>
@@ -343,9 +350,9 @@
 	    		search : function () {
 	    			var _this = this;
 	    			$.post("exampleSearch", null, function(data) {
-	    				if(data.length > 0){
+// 	    				if(data.length > 0){
 	    					_this.guestbooks = data;
-	    				}
+// 	    				}
 	    			}, "json");
 	    		},
 	    		detail : function (no) {
@@ -368,18 +375,30 @@
 	    				}
 	    			});
     			},
-    			deleteView : function (no, pwd) {
-					//삭제하려는 값 셋팅
-					gaia3d.guestBook.pwdCheck.deleteBtn = true;
-					gaia3d.guestBook.pwdCheck.updateBtn = false;
-					gaia3d.guestBook.pwdCheck.pwdCheckNo = no;
-					gaia3d.guestBook.pwdCheck.pwdCheckPwd = pwd;
+    			changeView : function (no, type) {
+    				
+    				var delBtnType = (type === 'delete') ? true : false;
+    				var params = {
+	    					"no" : no
+	    			}
+    				$.ajax({
+    					type : "POST",
+    					url : "exampleDetail",
+    					data : params
+    				}).done(function (data) {
+    					//비밀번호 확인  값 셋팅
+    					gaia3d.guestBook.pwdCheck.deleteBtn = delBtnType;
+    					gaia3d.guestBook.pwdCheck.updateBtn = !delBtnType;
+    					gaia3d.guestBook.pwdCheck.pwdCheckNo = data.no;
+    					gaia3d.guestBook.pwdCheck.pwdCheckPwd = data.pwd;
+    					
+    					//입력된 비밀번호 초기화
+    		    		$("#pwdChkView td input").val("");
+    					
+    		    		//비멀번호 확인 화면 다이얼로그 창 열기
+    					gaia3d.guestBook.pwdChkViewDialog.dialog("open");
+	    			});
 					
-					//입력된 비밀번호 초기화
-		    		$("#deleteView td input").val("");
-					
-		    		//비멀번호 확인 화면 다이얼로그 창 열기
-					gaia3d.guestBook.pwdChkViewDialog.dialog("open");
     			},
     			insertView : function () {
     				//입력된 데이터 초기화
@@ -387,19 +406,6 @@
     				
     				//등록화면 다이얼로그 창 열기
     				gaia3d.guestBook.insertViewDialog.dialog("open");
-    			},
-    			updateView : function (no, pwd) {
-    				//비밀번호 확인  값 셋팅
-    				gaia3d.guestBook.pwdCheck.deleteBtn = false;
-					gaia3d.guestBook.pwdCheck.updateBtn = true;
-					gaia3d.guestBook.pwdCheck.pwdCheckNo = no;
-					gaia3d.guestBook.pwdCheck.pwdCheckPwd = pwd;
-					
-					//입력된 비밀번호 초기화
-		    		$("#deleteView td input").val("");
-					
-		    		//비멀번호 확인 화면 다이얼로그 창 열기
-					gaia3d.guestBook.pwdChkViewDialog.dialog("open");
     			}
     		}
     	});
