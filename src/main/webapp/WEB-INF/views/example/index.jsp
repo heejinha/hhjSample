@@ -281,9 +281,6 @@
     			},
     			updateConfirm : function (no, pwd) {
     				
-    				//입력된 비밀번호 초기화
-    				$("#pwdChkView td input").val("");
-    				
     				//비밀번호 체크
     				if(pwd !== this.insPwd) {
     					alert("비밀번호 확인 필요");
@@ -298,6 +295,10 @@
     					url : "exampleDetail",
     					data : params, 
     				}).done( function(data) {
+    					
+    					//입력된 비밀번호 초기화
+        				$("#pwdChkView td input").val("");
+        				
     					//수정화면 창 열기
         				gaia3d.guestBook.updateViewDialog.dialog("open");
 	    				
@@ -370,6 +371,7 @@
     						gaia3d.guestBook.detail.dtlTell = data.tell;
     						gaia3d.guestBook.detail.dtlMessage = data.message;
     						gaia3d.guestBook.detail.dtlRegDate = data.regDate;
+    						
     						//상세보기 다이얼로그 창 열기
     						gaia3d.guestBook.detailDialog.dialog('open');
 	    				}
@@ -377,6 +379,9 @@
     			},
     			changeView : function (no, type) {
     				
+    				//jquery ui bug로 인해 소스 추가
+					$.ui.dialog.overlayInstances = 1;
+
     				var delBtnType = (type === 'delete') ? true : false;
     				var params = {
 	    					"no" : no
@@ -392,11 +397,11 @@
     					gaia3d.guestBook.pwdCheck.pwdCheckNo = data.no;
     					gaia3d.guestBook.pwdCheck.pwdCheckPwd = data.pwd;
     					
-    					//입력된 비밀번호 초기화
-    		    		$("#pwdChkView td input").val("");
-    					
     		    		//비멀번호 확인 화면 다이얼로그 창 열기
     					gaia3d.guestBook.pwdChkViewDialog.dialog("open");
+    		    		
+    					//입력된 비밀번호 초기화
+    		    		$("#pwdChkView td input").val("");
 	    			});
 					
     			},
