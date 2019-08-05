@@ -35,7 +35,7 @@
   <!-- 상세조회 -->
   <table id="detailView" border="1" style="width: 500px" title="상세조회">
          <tr>
-             <td>이름test</td>
+             <td>이름</td>
              <td>
                <input type="text" v-model="dtlName" readonly="readonly">
              </td>
