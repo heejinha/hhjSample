@@ -47,7 +47,7 @@
              </td>
          </tr>
          <tr>
-             <td>등록일자</td>
+             <td>등록일자test</td>
              <td>
                <input type="text" v-model="dtlRegDate" readonly="readonly">
              </td>
