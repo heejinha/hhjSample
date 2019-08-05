@@ -54,7 +54,7 @@
          </tr>
          <tr>
              <td colspan=4 rowspan="span">
-               <textarea cols=60 rows=5 v-model="dtlMessage" readonly="readonly">a</textarea>
+               <textarea cols=60 rows=5 v-model="dtlMessage" readonly="readonly"></textarea>
              </td>
          </tr>
     </table>
